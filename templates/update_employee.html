@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Employee Data</title>
+</head>
+<body>
+<a href="{% url 'employee_management' %}" class="btn btn-secondary back-button">Back</a>
+<div class="container mt-5">
+    <h2 class="mb-4">Update Employee Data</h2>
+    <form method="post" action="{% url 'update_employee' employee.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Render form fields automatically -->
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+</body>
+</html>

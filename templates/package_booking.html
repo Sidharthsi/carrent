@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Bookings</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #2980b9; /* Blue */
+            color: #fff; /* White */
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Adjust the space between buttons */
+        }
+        .action-button {
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            color: #ffffff;
+            background-color: #2980b9; /*Green */
+
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block; /* Make the buttons inline */
+        }
+        .button {
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            color: #ffffff;
+            background-color: #2980b9; /*Green */
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block; /* Make the buttons inline */
+        }
+      
+       .button {
+        background-color: #2980b9; /*Green */
+
+       }
+       .back-button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #2980b9;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                text-decoration: none;
+                position: fixed;
+                top: 20px; /* Adjust position to top */
+                right: 20px; /* Adjust position to right */
+                display: inline-block;
+            }
+        
+        .accept {
+            background-color: #4CAF50; /* Green */
+        }
+        .reject {
+            background-color: #f44336; /* Red */
+        }
+        .action-button:hover {
+            opacity: 0.8;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1>Car Rental Bookings</h1>
+    <a href="{% url 'admin_home' %}" class="back-button">Back</a>
+
+    <!-- Button to Toggle between Pending and Accepted Bookings -->
+    <div class="action-buttons">
+        <a href="{% url 'package_management' %}" class="button">Package Car Management</a>
+        <a href="#pending-bookings-table" class="action-button">Pending Bookings</a>
+        <a href="#accepted-bookings-table" class="action-button">Accepted Bookings</a>
+        <a href="#rejected-bookings-table" class="action-button">Rejected Bookings</a>
+    </div>
+    
+    <!-- Pending Bookings Section -->
+    <div id="pending-bookings-table" class="booking-section">
+        <h2>Pending Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <!-- Add other columns based on your model fields -->
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    {% if booking.status == 'pending' %}
+                        <tr>
+                            <td>{{ booking.full_name }}</td>
+                            <td>{{ booking.email }}</td>
+                            <td>{{ booking.status }}</td>
+                            <td class="action-buttons">
+                                <form method="post" action="/update_booking_status/{{ booking.id }}/">
+                                    {% csrf_token %}
+                                    <button type="submit" class="button accept" name="status" value="accepted">Accept</button>
+                                    <button type="submit" class="button reject" name="status" value="rejected">Reject</button>
+                                </form>
+                                <a href="{% url 'packbook_details' booking.id %}" class="button view-more">View</a>
+                            </td>
+
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Accepted Bookings Section -->
+    <div id="accepted-bookings-table" class="booking-section" style="display: none;">
+        <h2>Accepted Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <!-- Add other columns based on your model fields -->
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    {% if booking.status == 'accepted' %}
+                        <tr>
+                            <td>{{ booking.full_name }}</td>
+                            <td>{{ booking.email }}</td>
+                            <td>{{ booking.status }}</td>
+                            <td class="action-buttons">
+                                    {% csrf_token %}
+                                    <button type="submit" class="button reject" name="status" value="rejected">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+    <div id="rejected-bookings-table" class="booking-section" style="display: none;">
+        <h2>Rejected Bookings</h2>
+
+<table>       
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <!-- Add other columns based on your model fields -->
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    {% if booking.status == 'rejected' %}
+                        <tr>
+                            <td>{{ booking.full_name }}</td>
+                            <td>{{ booking.email }}</td>
+                            <td>{{ booking.status }}</td>
+                            <td class="action-buttons">
+                                <form method="post" action="/update_booking_status/{{ booking.id }}/">
+                                    {% csrf_token %}
+                                    <button type="submit" class="button accept" name="status" value="accepted">Accept</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const actionButtons = document.querySelectorAll('.action-button');
+    
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+    
+                    // Hide all booking sections
+                    const bookingSections = document.querySelectorAll('.booking-section');
+                    bookingSections.forEach(section => {
+                        section.style.display = 'none';
+                    });
+    
+                    // Show the target booking section
+                    targetSection.style.display = 'block';
+                });
+            });
+            
+        });
+    </script>
+    
+</body>
+</html>

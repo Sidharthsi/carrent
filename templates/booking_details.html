@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+        }
+
+        .booking-details,
+        .car-details {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .car-image {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .car-image img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .prev, .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+            z-index: 1;
+        }
+
+        .prev {
+            left: 10px;
+        }
+
+        .next {
+            right: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Back button -->
+        <a href="{% url 'car_rental_bookings' %}" class="btn btn-primary mb-4">Back</a>
+
+        <!-- Booking details -->
+        <div class="booking-details">
+            <h1>Booking Details</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul>
+                        <li><strong>Full Name:</strong> {{ booking.full_name }}</li>
+                        <li><strong>Email:</strong> {{ booking.email }}</li>
+                        <li><strong>Phone Number:</strong> {{ booking.phone_number }}</li>
+                        <li><strong>Aadhar Number:</strong> {{ booking.aadhar_number }}</li>
+                        {% if booking.license_number %}
+                            <li><strong>License Number:</strong> {{ booking.license_number }}</li>
+                        {% else %}
+                            <li>License Number not provided</li>
+                        {% endif %}
+                        <li><strong>Pickup Date:</strong> {{ booking.pickup_date }}</li>
+                        <li><strong>Pickup Time:</strong> {{ booking.pickup_time }}</li>
+                        <li><strong>Due-Off Date:</strong> {{ booking.return_date }}</li>
+                        <li><strong>Due-Off Time:</strong> {{ booking.return_time }}</li>
+                        <li><strong>From Location:</strong> {{ booking.from_location }}</li>
+                        <li><strong>To Location:</strong> {{ booking.to_location }}</li>
+                        <li><strong>Driver Choice:</strong> {{ booking.driver_choice }}</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <!-- Display license images -->
+                    {% if booking.front_license_image %}
+                        <img src="{{ booking.front_license_image.url }}" alt="Front License Image" class="img-fluid mb-3">
+                    {% else %}
+                        <p>Front License Image not provided</p>
+                    {% endif %}
+
+                    {% if booking.back_license_image %}
+                        <img src="{{ booking.back_license_image.url }}" alt="Back License Image" class="img-fluid">
+                    {% else %}
+                        <p>Back License Image not provided</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Car details -->
+        <div class="car-details">
+            <h1>Car Details</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="car-image">
+                        <img src="{{ car.car_photo.url }}" alt="{{ car.car_make }} {{ car.car_model }}" class="img-fluid">
+                        <a href="#" class="prev" onclick="changeImage(-1)">&#10094;</a>
+                        <a href="#" class="next" onclick="changeImage(1)">&#10095;</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <ul>
+                        <li><strong>Car Make:</strong> {{ car.car_make }}</li>
+                        <li><strong>Car Model:</strong> {{ car.car_model }}</li>
+                        <li><strong>Vehicle Number:</strong> {{ car.vehicle_number }}</li>
+                        <li><strong>Color:</strong> {{ car.color }}</li>
+                        <li><strong>Transmission Type:</strong> {{ car.transmission_type }}</li>
+                        <li><strong>Seat Number:</strong> {{ car.seat_number }}</li>
+                        <li><strong>Fuel Type:</strong> {{ car.fuel_type }}</li>
+                        <li><strong>Price:</strong> {{ car.price }}</li>
+                        <li><strong>Rental Duration:</strong> {{ car.rental_duration }}</li>
+                        <li><strong>Availability:</strong> {{ car.availability }}</li>
+                        <li><strong>Condition:</strong> {{ car.condition }}</li>
+                        <li><strong>Description:</strong> {{ car.description }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var currentImageIndex = 0;
+        var carPhotos = [
+            "{{ car.car_photo.url }}",
+            "{% if car.car_photo_2 %}{{ car.car_photo_2.url }}{% endif %}",
+            "{% if car.car_photo_3 %}{{ car.car_photo_3.url }}{% endif %}"
+            // Add more URLs if you have more image fields
+        ].filter(Boolean); // Filter out any undefined URLs
+    
+        function changeImage(n) {
+            currentImageIndex += n;
+            if (currentImageIndex >= carPhotos.length) {
+                currentImageIndex = 0;
+            }
+            if (currentImageIndex < 0) {
+                currentImageIndex = carPhotos.length - 1;
+            }
+            document.querySelector(".car-image img").src = carPhotos[currentImageIndex];
+        }
+    </script>
+</body>
+</html>

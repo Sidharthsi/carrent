@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rental Bill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .bill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .bill-info p {
+            margin: 5px 0;
+            color: #777;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        .total {
+            text-align: right;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            background-color: #2384d8;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            position: absolute;
+            top: 69px;
+            right: 200px;
+        }
+        .back-button:hover {
+            background-color: #1d76ba;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Rental Bill</h1>
+        </div>
+        <a href="{% url 'home' %}" class="back-button">Back</a>
+
+        <div class="bill-info">
+            <div>
+                <p><strong>Full Name:</strong> {{ booking.full_name }}</p>
+                <p><strong>Email:</strong> {{ booking.email }}</p>
+                <p><strong>Phone Number:</strong> {{ booking.phone_number }}</p>
+            </div>
+            <div>
+                <p><strong>Booked Date:</strong> <span id="bill-date"></span></p>
+                <p><strong>Booking ID:</strong> {{ booking.id }}</p>
+            </div>
+        </div>
+
+        <h2>Car Details:</h2>
+        <table>
+            <tr>
+                <th>Car Make</th>
+                <td>{{ car.car_make }}</td>
+            </tr>
+            <tr>
+                <th>Car Model</th>
+                <td>{{ car.car_model }}</td>
+            </tr>
+            <tr>
+                <th>Vehicle Number</th>
+                <td>{{ car.vehicle_number }}</td>
+            </tr>
+        </table>
+
+        <h2>Cost Details:</h2>
+        <table>
+            <tr>
+                <th>Duration</th>
+                <td>{{ booking.rental_duration }} {{ booking.duration_unit }}</td>
+            </tr>
+            <tr>
+                <th>Unit Price</th>
+                <td>
+                    {% if booking.duration_unit == 'hour' %}
+                        ₹{{ car.hour_price }} per hour
+                    {% elif booking.duration_unit == 'day' %}
+                        ₹{{ car.day_price }} per day
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        <div class="total">
+            <p><strong>Total Cost: </strong> ₹ {{ total_cost }}</p>
+        </div>
+
+        <div style="text-align: center;">
+            <form action="{% url 'render_bill_pdf' booking.id %}" method="get">
+                <button type="submit">Download PDF</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to set current date as bill date
+        var today = new Date();
+        var dateElement = document.getElementById('bill-date');
+        var formattedDate = today.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+        dateElement.textContent = formattedDate;
+    </script>
+</body>
+</html>

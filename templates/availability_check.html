@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Availability Check</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        label {
+            font-weight: bold;
+            flex: 0 0 100%;
+        }
+
+        input, select {
+            width: calc(50% - 5px);
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="date"] {
+            width: calc(50% - 9px);
+        }
+
+        input[type="number"] {
+            width: calc(25% - 4px);
+        }
+
+        select {
+            width: calc(25% - 4px);
+        }
+
+        .return-time-label, .return-time-field {
+            display: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            flex: 0 0 100%;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .availability-status {
+            text-align: center;
+            margin-top: 20px;
+            flex: 0 0 100%;
+        }
+
+        .availability-status h3 {
+            color: #333;
+        }
+
+        .availability-status p {
+            color: #555;
+        }
+        .marquee {
+            background-color:white;
+            color: red;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .marquee-content {
+            margin: 0;
+            font-size: 20px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+
+<h2>Car Rental Availability Check</h2>
+
+<form id="availabilityForm" method="post" action="{% url 'availability_check' %}">
+    {% csrf_token %}
+    <label for="pickup_date">Pickup Date:</label>
+    <!-- Replace the input type with Flatpickr -->
+    <input type="text" id="pickup_date" name="pickup_date" placeholder="Select date" required><br><br>
+    
+    <label for="pickup_time">Pickup Time:</label>
+    <select id="pickup_time" name="pickup_time" required>
+        <option value="" selected disabled>Select time</option>
+        <option value="00:00">12:00 AM</option>
+        <option value="01:00">1:00 AM</option>
+        <option value="02:00">2:00 AM</option>
+        <option value="03:00">3:00 AM</option>
+        <option value="04:00">4:00 AM</option>
+        <option value="05:00">5:00 AM</option>
+        <option value="06:00">6:00 AM</option>
+        <option value="07:00">7:00 AM</option>
+        <option value="08:00">8:00 AM</option>
+        <option value="09:00">9:00 AM</option>
+        <option value="10:00">10:00 AM</option>
+        <option value="11:00">11:00 AM</option>
+        <option value="12:00">12:00 PM</option>
+        <option value="13:00">1:00 PM</option>
+        <option value="14:00">2:00 PM</option>
+        <option value="15:00">3:00 PM</option>
+        <option value="16:00">4:00 PM</option>
+        <option value="17:00">5:00 PM</option>
+        <option value="18:00">6:00 PM</option>
+        <option value="19:00">7:00 PM</option>
+        <option value="20:00">8:00 PM</option>
+         <option value="21:00">9:00 PM</option>
+        <option value="22:00">10:00 PM</option>
+        <option value="23:00">11:00 PM</option>
+    </select><br><br>
+    
+    <label for="rental_duration">Rental Duration:</label>
+    <input type="number" id="rental_duration" name="rental_duration" min="1" required>
+    <select id="duration_option" name="duration_option">
+        <option value="hour">Hour(s)</option>
+        <option value="day">Day(s)</option>
+    </select><br><br>
+    
+    <label for="return_date">Return Date:</label>
+    <input type="date" id="return_date" name="return_date" readonly><br><br>
+    
+    <label for="return_time">Return Time:</label>
+    <select id="return_time" name="return_time" required>
+        <!-- Options for return time will be added dynamically -->
+    </select><br><br>
+    
+    <button type="submit">Check Availability</button>
+</form>
+
+{% if availability_status %}
+    <h3>Availability Status:</h3>
+    <p>{{ availability_status }}</p>
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    // Function to block past pickup times
+    function blockPastPickupTimes() {
+        var pickupDate = new Date(document.getElementById("pickup_date").value);
+        var currentTime = new Date();
+        var pickupTimeSelect = document.getElementById("pickup_time");
+
+        // Get current hour and minute
+        var currentHour = currentTime.getHours();
+        var currentMinute = currentTime.getMinutes();
+
+        // Get pickup hour and minute
+        var pickupHour = pickupDate.getHours();
+        var pickupMinute = pickupDate.getMinutes();
+
+        // Check if the selected date is today
+        if (pickupDate.toDateString() === currentTime.toDateString()) {
+            // Disable past pickup times
+            for (var i = 0; i < pickupTimeSelect.options.length; i++) {
+                var optionHour = parseInt(pickupTimeSelect.options[i].value.split(':')[0]);
+                var optionMinute = parseInt(pickupTimeSelect.options[i].value.split(':')[1]);
+
+                if (optionHour < currentHour || (optionHour === currentHour && optionMinute < currentMinute)) {
+                    pickupTimeSelect.options[i].disabled = true;
+                }
+            }
+        }
+    }
+
+    // Event listener for pickup date change
+    document.getElementById("pickup_date").addEventListener("change", blockPastPickupTimes);
+
+    // Initial setup
+    blockPastPickupTimes();
+</script>
+<script>
+       // Initialize Flatpickr for the pickup date input
+       flatpickr("#pickup_date", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        altInput: true,
+        altFormat: "F j, Y",
+        defaultDate: null // Remove the default date
+    });
+// Function to calculate return date and time
+function calculateReturnDateTime() {
+    var pickupDate = new Date(document.getElementById("pickup_date").value);
+    var rentalDuration = parseInt(document.getElementById("rental_duration").value);
+    var durationOption = document.getElementById("duration_option").value;
+
+    // Calculate return date and time
+    var returnDateTime = new Date(pickupDate);
+
+    if (durationOption === "hour") {
+        // Calculate return date and time for rental duration in hours
+        returnDateTime.setHours(returnDateTime.getHours() + rentalDuration);
+        if (returnDateTime.getHours() < pickupDate.getHours()) {
+            // If return time goes past midnight, adjust return date
+            returnDateTime.setDate(returnDateTime.getDate() + 1);
+        }
+    } else if (durationOption === "day") {
+        // Calculate return date for rental duration in days
+        returnDateTime.setDate(returnDateTime.getDate() + rentalDuration);
+        
+        // Clear existing return time options
+        document.getElementById("return_time").innerHTML = '';
+
+        // Set return time options for the same day
+        var pickupTime = document.getElementById("pickup_time").value;
+        var pickupHours = parseInt(pickupTime.split(":")[0]);
+        var pickupMinutes = parseInt(pickupTime.split(":")[1]);
+        
+        for (var i = 0; i < 24; i++) {
+            var optionHour = (pickupHours + i) % 24;
+            var ampm = (optionHour < 12) ? 'AM' : 'PM';
+            if (optionHour === 0) optionHour = 12; // Convert 0 to 12 for AM/PM format
+            if (optionHour > 12) optionHour -= 12; // Convert 24-hour to 12-hour format
+            
+            var optionText = ('0' + optionHour).slice(-2) + ':' + ('0' + pickupMinutes).slice(-2) + ' ' + ampm;
+            var optionValue = ('0' + optionHour).slice(-2) + ':' + ('0' + pickupMinutes).slice(-2);
+            var option = document.createElement("option");
+            option.text = optionText;
+            option.value = optionValue;
+            document.getElementById("return_time").add(option);
+        }
+
+        // Set return date field
+        document.getElementById("return_date").value = returnDateTime.toISOString().split('T')[0];
+        return; // Exit the function as we have set the return time for the same day
+    }
+    
+    // For hourly rental, update return date field and return time options
+    document.getElementById("return_date").value = returnDateTime.toISOString().split('T')[0];
+    updateReturnTimeOptions();
+}
+
+// Function to update return time options based on pickup time and rental duration
+function updateReturnTimeOptions() {
+    var pickupTime = document.getElementById("pickup_time").value;
+    var rentalDuration = parseInt(document.getElementById("rental_duration").value);
+    var returnTimeSelect = document.getElementById("return_time");
+    returnTimeSelect.innerHTML = ''; // Clear existing options
+    
+    // Calculate return time options based on pickup time and rental duration
+    var pickupHours = parseInt(pickupTime.split(":")[0]);
+    var pickupMinutes = parseInt(pickupTime.split(":")[1]);
+    
+    for (var i = 0; i < 24; i++) {
+        var optionHour = (pickupHours + rentalDuration + i) % 24;
+        var ampm = (optionHour < 12) ? 'AM' : 'PM';
+        if (optionHour === 0) optionHour = 12; // Convert 0 to 12 for AM/PM format
+        if (optionHour > 12) optionHour -= 12; // Convert 24-hour to 12-hour format
+        
+        var optionText = ('0' + optionHour).slice(-2) + ':' + ('0' + pickupMinutes).slice(-2) + ' ' + ampm;
+        var optionValue = ('0' + (pickupHours + rentalDuration + i)).slice(-2) + ':' + ('0' + pickupMinutes).slice(-2);
+        var option = document.createElement("option");
+        option.text = optionText;
+        option.value = optionValue;
+        returnTimeSelect.add(option);
+    }
+}
+
+    // Event listeners for input change
+    document.getElementById("pickup_date").addEventListener("input", calculateReturnDateTime);
+    document.getElementById("rental_duration").addEventListener("input", calculateReturnDateTime);
+    document.getElementById("duration_option").addEventListener("change", calculateReturnDateTime);
+    document.getElementById("pickup_time").addEventListener("change", updateReturnTimeOptions);
+
+    // Initial calculation when the page loads
+    calculateReturnDateTime();
+</script>
+
+</body>
+</html>

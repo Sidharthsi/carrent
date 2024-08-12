@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        strong {
+            font-weight: bold;
+        }
+        
+        .booking-item {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 20px;
+        }
+        
+        .status-pending {
+            color: blue;
+        }
+
+        .status-accept {
+            color: rgb(0, 255, 0);
+        }
+
+        .status-reject {
+            color: red;
+        }
+        
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        a:hover {
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Booking Details for {{ full_name }}</h1>
+        
+        {% if bookings %}
+            {% for booking in bookings %}
+                <div class="booking-item">
+                    <p><strong>Name:</strong> {{ booking.full_name }}</p>
+                    <p><strong>Email:</strong> {{ booking.email }}</p>
+                    <p><strong>Phone Number:</strong> {{ booking.phone_number }}</p>
+                    <p><strong>Aadhar Number:</strong> {{ booking.aadhar_number }}</p>
+                    <p><strong>Driver Choice:</strong> {{ booking.driver_choice }}</p>
+                    <p><strong>Pickup Date:</strong> {{ booking.pickup_date }}</p>
+                    <p><strong>Return Date:</strong> {{ booking.return_date }}</p>
+                    <p><strong>From Location:</strong> {{ booking.from_location }}</p>
+                    <p><strong>To Location:</strong> {{ booking.to_location }}</p>
+                    <p><strong>Number of Days:</strong> {{ booking.number_of_days }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if booking.status == 'pending' %}
+                            <span class="status-pending">{{ booking.get_status_display }}</span>
+                        {% elif booking.status == 'accepted' %}
+                            <span class="status-accept">{{ booking.get_status_display }}</span>
+                        {% elif booking.status == 'rejected' %}
+                            <span class="status-reject">{{ booking.get_status_display }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No bookings found for {{ full_name }} ({{ email }}).</p>
+        {% endif %}
+        
+        <a href="{% url 'home' %}">Back to Home</a>
+    </div>
+</body>
+</html>

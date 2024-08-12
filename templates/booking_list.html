@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Bookings</title>
+   <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #2980b9; /* Blue */
+            color: #fff; /* White */
+            text-transform: uppercase;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Adjust the space between buttons */
+        }
+        .action-button {
+            padding: 8px 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block; /* Make the buttons inline */
+        }
+        .accept {
+            background-color: #4CAF50; /* Green */
+        }
+        .reject {
+            background-color: #f44336; /* Red */
+        }
+        .view-more {
+            background-color:  #2980b9; /* Blue */
+        }
+        .action-button:hover {
+            opacity: 0.8;
+        }
+        .details {
+            display: none;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            margin-top: 10px;
+        }
+        .details p {
+            margin: 5px 0;
+             .accept-reject-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .accept-reject-buttons form {
+            display: flex;
+            flex-wrap: nowrap; /* Allow buttons to wrap to next line if necessary */
+        }
+
+        .accept-reject-buttons form button {
+            margin-right: 5px; /* Adjust margin between buttons */
+        }
+        }
+        .accept-reject-buttons {
+            display: flex;
+            align-items: center;
+        }
+
+        .accept-reject-buttons form {
+            display: flex;
+            flex-wrap: nowrap; /* Allow buttons to wrap to next line if necessary */
+        }
+
+        .accept-reject-buttons form button {
+            margin-right: 5px; /* Adjust margin between buttons */
+        }
+        .send-sms {
+    background-color: #ff9800; /* Orange */
+    /* Add any other styling you want */
+}
+.reass {
+    background-color: #3a7687; /* Orange */
+    /* Add any other styling you want */
+}
+.show-pending {
+    background-color:  #2980b9; /* Blue */
+}
+
+.show-accepted {
+    background-color:  #2980b9; /* Green */
+}
+.show-rejected {
+    background-color:  #2980b9;
+}
+.show-driver {
+    background-color:  #2980b9;
+}
+.show-self-driver {
+    background-color:  #2980b9;
+}
+.show-assigned {
+    background-color:  #2980b9;
+}
+
+
+    </style>
+</head>
+<body>
+    <h1>Car Rental Bookings</h1>
+    
+    <!-- Button to Toggle between Pending and Accepted Bookings -->
+    <div class="action-buttons">
+        <a href="#pending-bookings-table" class="action-button show-pending">Pending Bookings</a>
+        <a href="#accepted-bookings-table" class="action-button show-accepted">Accepted Bookings</a>
+        <a href="#rejected-bookings-table" class="action-button show-rejected">Rejected Bookings</a>
+        <a href="#driver-bookings-table" class="action-button show-driver">Driver Bookings</a>
+        <a href="#self-driver-bookings-table" class="action-button show-self-driver">Self-Drive Bookings</a>
+        <a href="#assigned-employees-table" class="action-button show-assigned">Assigned Employees</a> <!-- New button for showing/hiding assigned employees -->
+
+    </div>
+    
+
+    <!-- Pending Bookings Section -->
+    <div id="pending-bookings-table">
+        <h2>Pending Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Due-Off Date</th>
+                    <th>Due-Off Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in pending_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                        <div class="accept-reject-buttons">
+                            <form method="post" action="{% url 'booking_details' booking.id %}">
+                                {% csrf_token %}
+                                <!-- Your form fields here -->
+                                <button type="submit" class="action-button accept" name="accept">Accept</button>
+                                <button type="submit" class="action-button reject" name="reject">Reject</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- Your pending bookings table -->
+        </table>
+    </div>
+
+    <!-- Accepted Bookings Section -->
+    <div id="accepted-bookings-table">
+        <h2>Accepted Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Due-Off Date</th>
+                    <th>Due-Off Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in accepted_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                       
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- Your accepted bookings table -->
+        </table>
+    </div>
+
+    <!-- Rejected Bookings Section -->
+    <div id="rejected-bookings-table">
+        <h2>Rejected Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Due-Off Date</th>
+                    <th>Due-Off Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in rejected_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                        <form method="get" action="{% url 'send_sms' %}">
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <button type="submit" class="action-button send-sms">Send SMS</button>    
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- Your rejected bookings table -->
+        </table>
+    </div>
+
+    <!-- Driver Bookings Section -->
+    <div id="driver-bookings-table">
+        <h2>Driver Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Return Date Date</th>
+                    <th>Return Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in driver_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                        <form method="get" action="{% url 'send_sms' %}">
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <button type="submit" class="action-button send-sms">Send SMS</button>
+                        </form>
+                        <form method="get" action="{% url 'assign_employee' booking.id %}">
+                            <button type="submit" class="action-button view-more ">Assign</button>
+                        </form>                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <!-- Your driver bookings table -->
+        </table>
+    </div>
+    <!-- Assigned Employees Section -->
+
+<div id="assigned-employees-table">
+    <h2>Assigned Employees</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Pickup Date</th>
+                <th>Pickup Time</th>
+                <th>Return Date</th>
+                <th>Return Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in assigned_employees %}
+            <tr>
+                <!-- Fetch employee name using employee_id -->
+                <td>{{booking.fullname }}</td>
+                <td>{{ booking.full_name }}</td>
+                <td>{{ booking.email }}</td>
+                <td>{{ booking.phone_number }}</td>
+                <td>{{ booking.pickup_date }}</td>
+                <td>{{ booking.pickup_time }}</td>
+                <td>{{ booking.return_date }}</td>
+                <td>{{ booking.return_time }}</td>
+                <td class="action-buttons">
+                    <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                    <form method="get" action="{% url 'reassign_employee' booking.id %}">
+                        <button type="submit" class="action-button reass">Reassign</button>
+                    </form>
+                    <form method="get" action="{% url 'send_sms' %}">
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        <button type="submit" class="action-button send-sms">Send SMS</button>    
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+    <!-- Self-Driver Bookings Section -->
+    <div id="self-driver-bookings-table">
+        <h2>Self-Drive Bookings</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Due-Off Date</th>
+                    <th>Due-Off Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Populate this section with data from the self-drive bookings queryset -->
+                {% for booking in self_driver_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td class="action-buttons">
+                        <a href="{% url 'booking_details' booking.id %}" class="action-button view-more">View</a>
+                        <form method="get" action="{% url 'send_sms' %}">
+                            <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                            <button type="submit" class="action-button send-sms">Send SMS</button>    
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+        </table>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const showPendingButton = document.querySelector('.show-pending');
+    const showAcceptedButton = document.querySelector('.show-accepted');
+    const showRejectedButton = document.querySelector('.show-rejected');
+    const showDriverButton = document.querySelector('.show-driver');
+    const showSelfDriverButton = document.querySelector('.show-self-driver');
+    const showAssignedButton = document.querySelector('.show-assigned'); // New button for showing/hiding assigned employees
+    const pendingBookingsTable = document.getElementById('pending-bookings-table');
+    const acceptedBookingsTable = document.getElementById('accepted-bookings-table');
+    const rejectedBookingsTable = document.getElementById('rejected-bookings-table');
+    const driverBookingsTable = document.getElementById('driver-bookings-table');
+    const selfDriverBookingsTable = document.getElementById('self-driver-bookings-table');
+    const assignedEmployeesTable = document.getElementById('assigned-employees-table'); // New section for assigned employees
+
+    function scrollTo(element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function showTable(table) {
+        [pendingBookingsTable, acceptedBookingsTable, rejectedBookingsTable, driverBookingsTable, selfDriverBookingsTable, assignedEmployeesTable].forEach(function(item) {
+            if (item === table) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    showTable(pendingBookingsTable); // Show pending bookings table by default
+
+    showPendingButton.addEventListener('click', function() {
+        showTable(pendingBookingsTable);
+        scrollTo(pendingBookingsTable);
+    });
+
+    showAcceptedButton.addEventListener('click', function() {
+        showTable(acceptedBookingsTable);
+        scrollTo(acceptedBookingsTable);
+    });
+
+    showRejectedButton.addEventListener('click', function() {
+        showTable(rejectedBookingsTable);
+        scrollTo(rejectedBookingsTable);
+    });
+
+    showDriverButton.addEventListener('click', function() {
+        showTable(driverBookingsTable);
+        scrollTo(driverBookingsTable);
+    });
+
+    showSelfDriverButton.addEventListener('click', function() {
+        showTable(selfDriverBookingsTable);
+        scrollTo(selfDriverBookingsTable);
+    });
+
+    showAssignedButton.addEventListener('click', function() {
+        showTable(assignedEmployeesTable);
+        scrollTo(assignedEmployeesTable);
+       
+        }
+    );
+});
+
+    </script>
+    
+</body>
+</html>

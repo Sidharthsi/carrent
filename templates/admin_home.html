@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title> Car Rental</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <style>
+        /* CSS styles here */
+        * {/* Reset default margin and padding */
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Apply styles to the header */
+header {
+    position: fixed; /* Fixed position to stick to the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 0; /* Padding for top and bottom */
+    background-color: rgba(26, 25, 25, 0.596); /* Semi-transparent white background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Shadow for a subtle frame effect */
+    z-index: 1000; /* Ensure it's above other content */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+/* Container for logo and navigation links */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto; /* Center align content within the viewport */
+    padding: 0 20px;
+}
+
+
+
+/* Navigation links */
+.navigation {
+    display: flex;
+    align-items: center;
+}
+
+.navigation a {
+    padding: 10px 20px;
+    margin: 0 8px;
+    border-radius: 20px;
+    color: #333; /* Dark color for links */
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.navigation a:hover {
+    background-color: #f0f0f0; /* Light background color on hover */
+    color: #555; /* Slightly darker text color on hover */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    header {
+        padding: 10px 0; /* Adjusted padding for smaller screens */
+    }
+
+    .header-content {
+        padding: 0 10px; /* Adjusted padding for smaller screens */
+    }
+
+    .logo {
+        font-size: 1.3em; /* Adjusted font size for smaller screens */
+    }
+
+    .navigation {
+        display: none; /* Hide navigation links by default on smaller screens */
+    }
+
+    /* Toggle navigation menu for smaller screens */
+    .menu-toggle {
+        display: block;
+        cursor: pointer;
+        font-size: 1.5em;
+    }
+
+    .menu-open {
+        display: block;
+    }
+
+    .menu-open a {
+        display: block;
+        padding: 10px 0;
+        margin: 0;
+        text-align: center;
+        border-bottom: 1px solid #ddd; /* Separator for each link */
+    }
+}
+
+            /* Reset default margin and padding */
+
+            padding: 0;
+            box-sizing: border-box;
+            font-family: sans-serif;
+            margin: 0;
+        }
+        
+        section {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: hidden;
+        }
+        
+        .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #aba9a9;
+            transition: 0.8s;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 999;
+        }
+
+        header .logo {
+            position: relative;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            font-size: 2em;
+        }
+
+        header .navigation li {
+            list-style: none;
+        }
+
+        header .navigation {
+            position: relative;
+            display: flex;
+        }
+
+        header .navigation li a {
+            display: inline-block;
+            color: rgb(249, 249, 249);
+            font-weight: 400;
+            margin-left: 10px;
+            padding: 8px 15px;
+            border-radius: 40px;
+            text-decoration: none;
+        }
+
+        header .navigation li a:hover
+           {
+            background: rgb(255, 255, 255);
+            color: #000000;
+        }
+
+        .content {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            height: calc(120vh - 8rem); /* Adjusted */
+            width: calc(200vh - 8rem); /* Adjusted */
+
+        }
+
+        .content .textbox {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .content .textbox h2 {
+            color: rgb(0, 0, 0);
+            font-size: 48px;
+            line-height: 1.2em;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .content .textbox p {
+            color: rgb(255, 255, 255);
+            line-height: 35px;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .content .textbox a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 20px;
+            background-color: rgb(0, 0, 0);
+            color: #333;
+            border-radius: 40px;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+        .content .imgBox {
+            position: relative;
+            height: 90%;
+            width: 100%;
+            left: 20%; 
+        }
+
+        .content .imgBox img {
+            max-width: 400px;
+        }
+
+        model-viewer {
+            height: 200vh; /* Adjusted */
+            width: 200vw; /* Adjusted */
+            max-width: 1000px; /* Maximum width */
+            max-height: 800px; /* Maximum height */
+        }
+
+        .text-overlay {
+    position: relative;
+    top: 33%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #f0ebeb;
+    font-size: 136px; /* Font size */
+    padding: 20px;
+    border-radius: 10px;
+    z-index: -1;
+    -webkit-text-stroke: 2.25px#000000cc; /* Font border - adjust width and color */
+}
+.explore-button {
+    position: absolute;
+    bottom: 150px;
+    left: 55%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 12px 28px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.explore-button:hover {
+    background-color:black;
+    color: white;
+}
+.explo-button {
+    position: absolute;
+    bottom: 150px;
+    left: 40%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #333;
+    padding: 12px 28px;
+    border-radius: 40px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+}
+
+.explo-button:hover {
+    background-color:black;
+    color: white;
+}
+
+
+    </style>
+</head>
+<body>
+    <section>
+        <div class="bg"></div>
+
+        <header>
+            <a href="#" class="logo"><h3></h3></a>
+            <ul class="navigation">
+                <li><a href="{% url 'admin_home' %}" class="active" style="--i:1;">Home</a></li>
+                <li><a href="{% url 'car_rental_bookings' %}" style="--i:2;">Booking Details</a></li>
+                <li><a href="{% url 'employee_management' %}" style="--i:3;">Employee Management</a></li>
+                <li><a href="{% url 'car_management' %}" style="--i:3;">Car Management</a></li>
+                <li><a href="{% url 'car_package_bookings' %}" style="--i:3;">Package Management</a></li>
+                <li><a href="{% url 'admin_feedback' %}" style="--i:4;">Feedback</a></li>
+            </ul>
+        </header>
+        <div class="imgBox">
+        
+                <model-viewer src="{% static 'models/1.glb' %}" class="fruits" camera-controls camera-orbit="210deg 85deg" shadow-intensity="1" touch-action="pan-y">
+
+                    <!-- Text overlay -->
+                    <div class="text-overlay">
+                        <h3>GT GROUPS </h3>
+                </model-viewer>
+            </div>
+            <a href="{% url 'availability_check' %}" class="explo-button">Book Car </a>
+            <a href="{% url 'explore_cars' %}" class="explore-button">Explore Cars</a>
+        </div>
+    </section>
+</body>
+</html>

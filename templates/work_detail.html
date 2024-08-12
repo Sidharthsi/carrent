@@ -1,0 +1,100 @@
+<!-- employee_booking_details.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Booking Details</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        /* Your CSS styles remain unchanged */
+    </style>
+</head>
+
+<body>
+    {% if error_message %}
+    <p class="mt-3">{{ error_message }}</p>
+    {% else %}
+    <h2 class='mt-3'>Booking Details for Employee: {{ employee_fullname }}</h2>
+    
+    <!-- Section for Finished Work -->
+    <h3 class='mt-3'>Finished Work</h3>
+    <div class='table-responsive'>
+        <table class='table table-bordered table-striped mt-3'>
+            <thead class='thead-dark'>
+                <tr>
+                   <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Return Date</th>
+                    <th>Return Time</th>                    
+                    <th>From Location</th>
+                    <th>To Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in finished_bookings %}
+                 <tr>
+                 <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td> 
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td>{{ booking.from_location }}</td>
+                    <td>{{ booking.to_location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Section for Pending Work -->
+    <h3 class='mt-3'>Pending Work</h3>
+    <div class='table-responsive'>
+        <table class='table table-bordered table-striped mt-3'>
+            <thead class='thead-dark'>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Pickup Date</th>
+                    <th>Pickup Time</th>
+                    <th>Return Date</th>
+                    <th>Return Time</th>
+                    <th>From Location</th>
+                    <th>To Location</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for booking in pending_bookings %}
+                <tr>
+                    <td>{{ booking.full_name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.phone_number }}</td>
+                    <td>{{ booking.pickup_date }}</td>
+                    <td>{{ booking.pickup_time }}</td>
+                    <td>{{ booking.return_date }}</td>
+                    <td>{{ booking.return_time }}</td>
+                    <td>{{ booking.from_location }}</td>
+                    <td>{{ booking.to_location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <a href="{% url 'employee_management' %}" class="btn btn-success back-button">Back</a>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+
+</html>

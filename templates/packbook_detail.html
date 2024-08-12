@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Booking Details</title>
+    <style>
+        /* Add your custom styles for package booking details page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+        .booking-details {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        .detail-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="booking-details">
+        <h2>Package Booking Details</h2>
+        <div class="detail-item">
+            <span class="detail-label">Full Name:</span> {{ booking.full_name }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Email:</span> {{ booking.email }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Phone Number:</span> {{ booking.phone_number }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Aadhar Number:</span> {{ booking.aadhar_number }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Driver Choice:</span> {{ booking.driver_choice}}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">License Number:</span> {{ booking.license_number }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Pickup Date:</span> {{ booking.pickup_date }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Return Date:</span> {{ booking.return_date }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">From Location:</span> {{ booking.from_location }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">To Location:</span> {{ booking.to_location }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Number of Days:</span> {{ booking.number_of_days }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Package ID:</span> {{ booking.package_id }}
+        </div>
+        <div class="detail-item">
+            <span class="detail-label">Status:</span> {{ booking.get_status_display }}
+        </div>
+        <!-- Add more details as needed -->
+    </div>
+</body>
+</html>

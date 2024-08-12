@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Home Page</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: #2E86C1;
+            color: white;
+            text-align: center;
+            padding: 1.5em 0;
+            border-radius: 0 0 15px 15px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            margin: 20px;
+        }
+
+        nav {
+            background-color: #21618C;
+            padding: 1em;
+            width: 200px;
+            border-radius: 15px;
+            margin-right: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav li {
+            margin-bottom: 15px;
+        }
+
+        nav a {
+            display: block;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #1a4f6f;
+        }
+
+        section {
+            flex: 1;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center the content */
+        }
+
+        footer {
+            background-color: #2E86C1;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+
+</head>
+<body>
+    <header>
+        <h1>Staff Home Page</h1>
+    </header>
+
+    <main>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="{% url 'staff_profile' %}">Profile</a></li>
+                <li><a href="{% url 'staff' %}">Tasks</a></li>
+                <li>
+                    <form id="logoutForm" method="post" action="/">
+                        {% csrf_token %}
+                        <input type="hidden" name="logout" value="true">
+                        <input type="submit" value="Logout" style="background-color: #1a4f6f; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">
+                    </form>
+                </li>
+            </ul>
+        </nav>
+        <section>
+            <img src="https://cdn.dribbble.com/users/17707/screenshots/1725705/celica.gif" alt="Celica GIF" style="max-width: 100%; height: auto;">
+
+            <div style="margin-top: 20px;">
+                <h2>Welcome to the Staff Home Page</h2>
+                <p>This page provides access to various staff-related functionalities.</p>
+                <p>Feel free to navigate using the links on the left.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; {% now "Y" %} Staff Home Page</p>
+    </footer>
+
+    <script>
+        document.getElementById('logoutForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

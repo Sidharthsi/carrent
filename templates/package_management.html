@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management</title>
+    <style>
+        body {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding-top: 40px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #b8c0c0;
+        }
+
+        .availability-toggle {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 120px;
+            color: white;
+            background-color: #2980b9; /* Default blue color */
+        }
+
+        .available {
+            color: #65cf91; /* Green */
+        }
+
+        .unavailable {
+            color: #c0392b; /* Red */
+        }
+
+        .unavailable-row {
+            transition: background-color 0.5s ease; /* Smooth transition */
+            background-color: #e9ada7; /* Light red for faded effect */
+        }
+        .detail-button, .update-button, #registrationButton {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 5px; /* Add margin for buttons */
+                background-color: #2980b9; /* Blue color scheme */
+                color: #fff;
+                text-decoration: none;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+    
+            .detail-button:hover, .update-button:hover, #registrationButton:hover {
+                background-color: #2980b9; /* Darker hover color */
+            }
+    
+            .back-button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #2980b9;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                text-decoration: none;
+                position: fixed;
+                top: 20px; /* Adjust position to top */
+                right: 20px; /* Adjust position to right */
+                display: inline-block;
+            }
+    
+            .back-button:hover {
+                background-color: #2980b9;
+            }
+            #registrationButton {
+        margin: 10px 0px 10px 900px;
+            }
+    </style>
+</head>
+<body>
+    <h1>Package Management</h1>
+    <a href="{% url 'register_package' %}" id="registrationButton">Register Car</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Car Make</th>
+                <th>Car Model</th>
+                <th>Color</th>
+                <th>Transmission Type</th>
+                <th>Seat Number</th>
+                <th>Availability</th>
+                <th>Condition</th>
+                <th>Number of Days</th>
+                <th>Package Price</th>
+                <th>Action</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for package in packages %}
+            <tr id="row-{{ package.id }}" class="{% if package.availability == 'unavailable' %}unavailable-row{% endif %}">
+                <td>{{ package.car_make }}</td>
+                <td>{{ package.car_model }}</td>
+                <td>{{ package.color }}</td>
+                <td>{{ package.transmission_type }}</td>
+                <td>{{ package.seat_number }}</td>
+                <td class="{% if package.availability == 'available' %}available{% else %}unavailable{% endif %}">
+                    {% if package.availability == 'available' %}
+                        Available
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </td>
+                <td>{{ package.condition }}</td>
+                <td>{{ package.number_of_days }}</td>
+                <td>{{ package.package_price }}</td>
+                <td><a class="detail-button" href="{% url 'package_details' package_id=package.id %}">View Details</a></td>
+                <td><a class="update-button" href="{% url 'update_package' package.id %}">Update</a></td>
+               
+                
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'car_package_bookings' %}" class="back-button">Back</a>
+
+                 
+    </script>
+</body>
+</html>

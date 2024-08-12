@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management</title>
+    <style>
+        body {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding-top: 40px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #f0f0f0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #b8c0c0;
+        }
+
+        .availability-toggle {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 120px;
+            color: white;
+            background-color: #2980b9; /* Default blue color */
+        }
+
+        .available {
+            color: #65cf91; /* Green */
+        }
+
+        .unavailable {
+            color: #c0392b; /* Red */
+        }
+
+        .unavailable-row {
+            transition: background-color 0.5s ease; /* Smooth transition */
+            background-color: #e9ada7; /* Light red for faded effect */
+        }
+        .detail-button, .update-button, #registrationButton {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 5px; /* Add margin for buttons */
+                background-color: #2980b9; /* Blue color scheme */
+                color: #fff;
+                text-decoration: none;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+    
+            .detail-button:hover, .update-button:hover, #registrationButton:hover {
+                background-color: #2980b9; /* Darker hover color */
+            }
+    
+            .back-button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #2980b9;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                text-decoration: none;
+                position: fixed;
+                top: 20px; /* Adjust position to top */
+                right: 20px; /* Adjust position to right */
+                display: inline-block;
+            }
+    
+            .back-button:hover {
+                background-color: #2980b9;
+            }
+            #registrationButton {
+        margin: 10px 0px 10px 900px;
+            }
+    </style>
+</head>
+<body>
+    <h1>Car Management</h1>
+    <a href="{% url 'register_car' %}" id="registrationButton">Register Car</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Car Make</th>
+                <th>Car Model</th>
+                <th>Color</th>
+                <th>Transmission Type</th>
+                <th>Seat Number</th>
+                <th>Availability</th>
+                <th>Condition</th>
+                <th>Action</th>
+                <th>Update</th>
+                <th>Change Availability</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+            <tr id="row-{{ car.id }}" class="{% if car.availability == 'unavailable' %}unavailable-row{% endif %}">
+                <td>{{ car.car_make }}</td>
+                <td>{{ car.car_model }}</td>
+                <td>{{ car.color }}</td>
+                <td>{{ car.transmission_type }}</td>
+                <td>{{ car.seat_number }}</td>
+                <td id="availability-cell-{{ car.id }}" class="{% if car.availability == 'available' %}available{% else %}unavailable{% endif %}">
+                    {% if car.availability == 'available' %}
+                        Available
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </td>
+                <td>{{ car.condition }}</td>
+                <td><a class="detail-button" href="{% url 'car_details' car.id %}">View Details</a></td>
+                <td><a class="update-button" href="{% url 'update_car' car.id %}">Update</a></td>
+                <td>
+                    <button class="availability-toggle" data-car-id="{{ car.id }}">
+                        {% if car.availability == 'available' %}
+                            Make Unavailable
+                        {% else %}
+                            Make Available
+                        {% endif %}
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'admin_home' %}" class="back-button">Back</a>
+
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        // Event listener for availability toggle button
+        $('.availability-toggle').click(function() {
+            // Retrieve car ID from the data attribute
+            var carId = $(this).data('car-id');
+
+            // Send AJAX request to update availability
+            $.ajax({
+                url: '/update_availability/' + carId + '/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    // Update availability cell content and button text/style based on response
+                    var availabilityCell = $('#availability-cell-' + carId);
+                    var row = $('#row-' + carId);
+
+                    if (data.availability === 'available') {
+                        availabilityCell.text('Available');
+                        availabilityCell.removeClass('unavailable').addClass('available');
+                        $('.availability-toggle[data-car-id="' + carId + '"]').text('Make Unavailable').removeClass('unavailable').addClass('available').css('background-color', '#2980b9');
+                        row.removeClass('unavailable-row'); // Remove faded row background
+                    } else {
+                        availabilityCell.text('Unavailable');
+                        availabilityCell.removeClass('available').addClass('unavailable');
+                        $('.availability-toggle[data-car-id="' + carId + '"]').text('Make Available').removeClass('available').addClass('unavailable').css('background-color', '#2980b9');
+                        row.addClass('unavailable-row'); // Add faded row background
+                    }
+                    console.log('Availability updated successfully');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error updating availability:', error);
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

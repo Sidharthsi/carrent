@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Package Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS */
+        .container {
+            margin-top: 50px;
+            position: relative; /* Add relative positioning to the container */
+        }
+
+        .package-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .package-image {
+            flex: 1;
+            margin-right: 20px;
+            position: relative; /* Add relative positioning to the package image container */
+        }
+
+        .package-details-table {
+            flex: 2;
+        }
+
+        .package-details-table table {
+            width: 100%;
+        }
+
+        .package-details-table table th {
+            text-align: left;
+            width: 30%;
+        }
+
+        .package-details-table table td {
+            vertical-align: top;
+        }
+
+        .btn-container {
+            margin-top: -50px;
+            display: flex;
+            justify-content: center; /* Center align buttons */
+            align-items: flex-start;
+            padding: 9px 30px 80px 20px; /* Align buttons to the top */
+        }
+
+        .btn-container .btn {
+            font-size: 20px;
+            padding: 5px 30px;
+            margin-top: 50px;
+            /* Set button width to auto for center alignment */
+        }
+
+        .back-btn {
+            position: absolute; /* Position the back button absolutely */
+            top: -60px; /* Set top position */
+            right: 20px; /* Set right position */
+        }
+
+        .prev,
+        .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px; /* Increase arrow width */
+            height: 70px; /* Increase arrow height */
+            font-size: 40px; /* Increase arrow size */
+            z-index: 1;
+            color: #ffffffa6; /* Set arrow color */
+            text-decoration: none; /* Remove any default text decoration */
+        }
+
+        .prev {
+            left: 0px; /* Position left arrow */
+        }
+
+        .next {
+            right: -28px; /* Position right arrow */
+        }
+
+        /* Add hover effect for arrows */
+        .prev:hover,
+        .next:hover {
+            color: #ffffff; /* Change arrow color on hover */
+            text-decoration: none; /* Remove underline on hover */
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Package Details</h1>
+    <div class="package-details">
+        <div class="package-image" style="position: relative;">
+            <img src="{{ package.car_photo.url }}" class="img-fluid" alt="{{ package.car_make }} {{ package.car_model }}" id="packageImage">
+            <!-- Navigation buttons for package images -->
+            <a href="#" class="prev" onclick="changeImage(-1)">&#10094;</a>
+            <a href="#" class="next" onclick="changeImage(1)">&#10095;</a>
+        </div>
+
+        <div class="package-details-table">
+            <table class="table table-bordered">
+                <tbody>
+                <tr>
+                    <th>Package Name</th>
+                    <td>{{ package.package_name }}</td>
+                </tr>
+                <tr>
+                    <th>Car Make</th>
+                    <td>{{ package.car_make }}</td>
+                </tr>
+                <tr>
+                    <th>Car Model</th>
+                    <td>{{ package.car_model }}</td>
+                </tr>
+                <tr>
+                    <th>Vehicle Number</th>
+                    <td>{{ package.vehicle_number }}</td>
+                </tr>
+                <tr>
+                    <th>Color</th>
+                    <td>{{ package.color }}</td>
+                </tr>
+                <tr>
+                    <th>Transmission Type</th>
+                    <td>{{ package.get_transmission_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>Seat Number</th>
+                    <td>{{ package.seat_number }}</td>
+                </tr>
+                <tr>
+                    <th>Fuel Type</th>
+                    <td>{{ package.get_fuel_type_display }}</td>
+                </tr>
+                <tr>
+                    <th>Availability</th>
+                    <td>{{ package.get_availability_display }}</td>
+                </tr>
+                <tr>
+                    <th>Condition</th>
+                    <td>{{ package.get_condition_display }}</td>
+                </tr>
+                <tr>
+                    <th>Additional Features</th>
+                    <td>{{ package.additional_features }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{ package.description }}</td>
+                </tr>
+                <tr>
+                    <th>Number of Days</th>
+                    <td>{{ package.number_of_days }}</td>
+                </tr>
+                <tr>
+                    <th>Package Price</th>
+                    <td>₹{{ package.package_price }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="btn-container">
+        <!-- Back button to navigate back to previous page -->
+        <a href="#" onclick="history.back();" class="btn btn-secondary btn-lg back-btn">Back</a>
+    </div>
+</div>
+
+<script>
+    var currentImageIndex = 0;
+    var packagePhotos = [
+        "{{ package.car_photo.url }}",
+        "{% if package.car_photo_2 %}{{ package.car_photo_2.url }}{% endif %}",
+        "{% if package.car_photo_3 %}{{ package.car_photo_3.url }}{% endif %}"
+        // Add more URLs if you have more image fields
+    ].filter(Boolean); // Filter out any undefined URLs
+
+    function changeImage(n) {
+        currentImageIndex += n;
+        if (currentImageIndex >= packagePhotos.length) {
+            currentImageIndex = 0;
+        }
+        if (currentImageIndex < 0) {
+            currentImageIndex = packagePhotos.length - 1;
+        }
+        document.getElementById("packageImage").src = packagePhotos[currentImageIndex];
+    }
+</script>
+
+</body>
+</html>

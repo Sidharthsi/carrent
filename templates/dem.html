@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Rental Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Include Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        /* Your CSS styles here */
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="booking-form">
+                    <h1 class="text-center mb-4">Car Rental Booking</h1>
+                    <form method="post" enctype="multipart/form-data" id="rentalForm" onsubmit="return validateDate()">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="id_full_name" class="form-label">Full Name:</label>
+                                <input type="text" id="id_full_name" name="full_name" class="form-control" required>
+                            </div>
+                            <div class="col">
+                                <label for="id_email" class="form-label">Email:</label>
+                                <input type="email" id="id_email" name="email" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="id_phone_number" class="form-label">Phone Number:</label>
+                                <input type="tel" id="id_phone_number" name="phone_number" class="form-control" required>
+                            </div>
+                            <div class="col">
+                                <label for="id_aadhar_number" class="form-label">Aadhar Number:</label>
+                                <input type="text" id="id_aadhar_number" name="aadhar_number" pattern="[0-9]{12}" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="driverChoice" class="form-label">Driver Choice:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="driverChoiceDriver" name="driver_choice" value="driver" required onclick="toggleLicenseFields()">
+                                    <label class="form-check-label" for="driverChoiceDriver">Driver</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="driverChoiceSelf" name="driver_choice" value="self_driver" required onclick="toggleLicenseFields()">
+                                    <label class="form-check-label" for="driverChoiceSelf">Self Drive</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <p id="extraChargeMessage" style="display: none; color: red;">Extra charge will be applied for driver.</p>
+
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="id_license_number" class="form-label">License Number:</label>
+                                <input type="text" id="id_license_number" name="license_number" class="form-control" required>
+                            </div>
+                            <div class="col">
+                                <label for="id_front_license_image" class="form-label">Front Side of License:</label>
+                                <input type="file" id="id_front_license_image" name="front_license_image" class="form-control" accept="image/*" required>
+                            </div>
+                            <div class="col">
+                                <label for="id_back_license_image" class="form-label">Back Side of License:</label>
+                                <input type="file" id="id_back_license_image" name="back_license_image" class="form-control" accept="image/*" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="id_pickup_date" class="form-label">Pickup Date:</label>
+                                <input type="text" id="id_pickup_date" name="pickup_date" class="form-control" placeholder="Select Pickup Date" required>
+                            </div>
+                            <div class="col">
+                                <label for="id_pickup_time" class="form-label">Pickup Time:</label>
+                                <input type="text" id="id_pickup_time" name="pickup_time" class="form-control" placeholder="Select Pickup Time" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Rental Duration:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rental_duration_type" id="rentalDurationHours" value="hours" required onclick="toggleRentalDurationFields()">
+                                    <label class="form-check-label" for="rentalDurationHours">Hours</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="rental_duration_type" id="rentalDurationDays" value="days" required onclick="toggleRentalDurationFields()">
+                                    <label class="form-check-label" for="rentalDurationDays">Days</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="col">
+                                <label for="id_rental_duration_days" class="form-label">Rental Duration (Days):</label>
+                                <input type="number" id="id_rental_duration_days" name="rental_duration_days" class="form-control" required>
+                                <p id="invalidDurationMessage" style="display: none; color: red;">Please select at least 1 day.</p>
+                            </div>
+                            <div class="col">
+                                <label for="id_rental_duration_hours" class="form-label">Rental Duration (Hours):</label>
+                                <input type="number" id="id_rental_duration_hours" name="rental_duration_hours" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="returnDate" class="form-label">Return Date:</label>
+                                <input type="text" id="returnDate" name="return_date" class="form-control" placeholder="Select Return Date" required>
+                            </div>
+                            <div class="col">
+                                <label for="returnTime" class="form-label">Return Time:</label>
+                                <input type="text" id="returnTime" name="return_time" class="form-control" placeholder="Select Return Time" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Total Rental Duration:</label>
+                                <input type="text" id="totalDuration" class="form-control" readonly>
+                            </div>
+                        </div>
+                        
+                        <!-- Location and Driver Choice -->
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="fromLocation" class="form-label">From Location:</label>
+                                <input type="text" id="fromLocation" name="from_location" class="form-control" required>
+                                <p id="takeCarMessage" style="display: none; color: rgb(218, 28, 28);">Remember come and  take the car from the shop . No delivery is provided!</p>
+                            </div>
+                            <div class="col">
+                                <label for="toLocation" class="form-label">To Location:</label>
+                                <input type="text" id="toLocation" name="to_location" class="form-control" required>
+                            </div>
+                        </div>
+                        <!-- Car Details -->
+                        <h1 class="text-center mb-4">Car Detail</h1>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="carMake" class="form-label">Car Company:</label>
+                                <input type="text" id="carMake" name="car_make" class="form-control" value="{{ car.car_make }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="carModel" class="form-label">Model:</label>
+                                <input type="text" id="carModel" name="car_model" class="form-control" value="{{ car.car_model }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="vehicleNumber" class="form-label">Vehicle Number:</label>
+                                <input type="text" id="vehicleNumber" name="vehicle_number" class="form-control" value="{{ car.vehicle_number }}" required oninput="this.value = this.value.toUpperCase()" readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="color" class="form-label">Color:</label>
+                                <input type="text" id="color" name="color" class="form-control" value="{{ car.color }}" required readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="transmissionType" class="form-label">Transmission Type:</label>
+                                <input type="text" id="transmissionType" name="transmission_type" class="form-control" value="{{ car.transmission_type }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="seatNumber" class="form-label">Seat Number:</label>
+                                <input type="number" id="seatNumber" name="seat_number" class="form-control" value="{{ car.seat_number }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fuelType" class="form-label">Fuel Type:</label>
+                                <input type="text" id="fuelType" name="fuel_type" class="form-control" value="{{ car.fuel_type }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="price" class="form-label">Price (per hour):</label>
+                                <input type="number" id="price" name="price" class="form-control" value="{{ car.price }}" required readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <label for="rentalDuration" class="form-label">Rental Duration (hours):</label>
+                                <input type="number" id="rentalDuration" name="rental_duration" class="form-control" value="{{ car.rental_duration }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="availability" class="form-label">Availability:</label>
+                                <input type="text" id="availability" name="availability" class="form-control" value="{{ car.availability }}" required readonly>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="condition" class="form-label">Condition:</label>
+                                <input type="text" id="condition" name="condition" class="form-control" value="{{ car.condition }}" required readonly>
+                            </div>
+                            <div class="col">
+                                <label for="description" class="form-label">Description:</label>
+                                <textarea id="description" name="description" class="form-control" rows="3" required readonly>{{ car.description }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="row">
+                            <div class="col text-center">
+                                <button type="submit" class="btn btn-primary">Book Car</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Automatically add "+91" to the phone number field
+        document.getElementById("id_phone_number").addEventListener("input", function() {
+            if (this.value.length === 0) {
+                this.value = "+91";
+            }
+        });
+        
+        
+        function validateDate() {
+            var pickupDate = new Date(document.getElementById('id_pickup_date').value);
+            var pickupTime = document.getElementById('id_pickup_time').value;
+    
+            // Convert pickup time to hours and minutes
+            var pickupTimeSplit = pickupTime.split(':');
+            var pickupHour = parseInt(pickupTimeSplit[0]);
+            var pickupMinute = parseInt(pickupTimeSplit[1]);
+    
+            // Convert pickup date/time to milliseconds
+            var pickupDateTime = pickupDate.getTime() + (pickupHour * 60 + pickupMinute) * 60000;
+    
+            // Allow form submission
+            return true;
+        }
+        
+    </script>
+
+<script>
+    function toggleLicenseFields() {
+    var driverChoice = document.querySelector('input[name="driver_choice"]:checked').value;
+    var fromLocationInput = document.getElementById('fromLocation'); // Get the From Location input field
+    var takeCarMessage = document.getElementById('takeCarMessage'); // Get the message element
+
+    if (driverChoice === 'driver') {
+        fromLocationInput.value = ''; // Clear the value if Driver is chosen
+        takeCarMessage.style.display = 'none'; // Hide the message
+    } else {
+        fromLocationInput.value = 'Thallapara'; // Fill the value with "Thallapara" if Self Drive is chosen
+        takeCarMessage.style.display = 'block'; // Show the message
+    }
+
+    var licenseNumberInput = document.getElementById('id_license_number');
+    var frontLicenseImageInput = document.getElementById('id_front_license_image');
+    var backLicenseImageInput = document.getElementById('id_back_license_image');
+    var extraChargeMessage = document.getElementById('extraChargeMessage');
+
+    if (driverChoice === 'driver') {
+        licenseNumberInput.disabled = true;
+        licenseNumberInput.value = ''; // Clear the value
+        frontLicenseImageInput.disabled = true;
+        frontLicenseImageInput.value = ''; // Clear the value
+        backLicenseImageInput.disabled = true;
+        backLicenseImageInput.value = ''; // Clear the value
+        extraChargeMessage.style.display = 'block'; // Show the paragraph
+    } else {
+        licenseNumberInput.disabled = false;
+        frontLicenseImageInput.disabled = false;
+        backLicenseImageInput.disabled = false;
+        extraChargeMessage.style.display = 'none'; // Hide the paragraph
+    }
+}
+    
+</script>
+<script>
+    // Function to toggle rental duration fields based on user choice
+    function toggleRentalDurationFields() {
+        var rentalDurationHoursLabel = document.querySelector('label[for="id_rental_duration_hours"]');
+        var rentalDurationHoursInput = document.getElementById('id_rental_duration_hours');
+        var rentalDurationDaysLabel = document.querySelector('label[for="id_rental_duration_days"]');
+        var rentalDurationDaysInput = document.getElementById('id_rental_duration_days');
+
+        if (document.getElementById('rentalDurationHours').checked) {
+            rentalDurationHoursLabel.style.display = 'block';
+            rentalDurationHoursInput.style.display = 'block';
+            rentalDurationDaysLabel.style.display = 'none';
+            rentalDurationDaysInput.style.display = 'none';
+            rentalDurationDaysInput.value = '0'; // Clear value when selecting hours
+        } else {
+            rentalDurationHoursLabel.style.display = 'block';
+            rentalDurationHoursInput.style.display = 'block';
+            rentalDurationDaysLabel.style.display = 'block';
+            rentalDurationDaysInput.style.display = 'block';
+            rentalDurationDaysInput.value = '';
+        }
+    }
+
+    // Add event listener to the rental duration days input field
+    document.getElementById('id_rental_duration_days').addEventListener('input', function() {
+        var rentalDurationDaysInput = this;
+        if (rentalDurationDaysInput.value == 0) {
+            // Show message
+            document.getElementById('invalidDurationMessage').style.display = 'block';
+            // Prevent form submission
+            document.getElementById('rentalForm').addEventListener('submit', preventSubmission);
+        } else {
+            // Hide message
+            document.getElementById('invalidDurationMessage').style.display = 'none';
+            // Allow form submission
+            document.getElementById('rentalForm').removeEventListener('submit', preventSubmission);
+        }
+    });
+
+    // Function to prevent form submission
+    function preventSubmission(event) {
+    event.preventDefault();
+}
+
+function calculateReturnDateTime() {
+    var pickupDate = new Date(document.getElementById('id_pickup_date').value);
+    var pickupTime = document.getElementById('id_pickup_time').value;
+
+    // Convert pickup time to hours and minutes
+    var pickupTimeSplit = pickupTime.split(':');
+    var pickupHour = parseInt(pickupTimeSplit[0]);
+    var pickupMinute = parseInt(pickupTimeSplit[1]);
+
+    // Keep track of whether pickup time is AM or PM
+    var isAM = pickupTime.toLowerCase().includes('am');
+
+    // Convert pickup date/time to milliseconds
+    var pickupDateTime = new Date(pickupDate.getFullYear(), pickupDate.getMonth(), pickupDate.getDate(), pickupHour, pickupMinute);
+
+    var rentalDurationHours = parseInt(document.getElementById('id_rental_duration_hours').value) || 0;
+    var rentalDurationDays = parseInt(document.getElementById('id_rental_duration_days').value) || 0;
+
+    // Calculate total rental duration in hours and days
+    var totalHours = rentalDurationHours + (rentalDurationDays * 24);
+    var totalDays = Math.floor(totalHours / 24);
+    var remainingHours = totalHours % 24;
+
+    // Calculate return date and time
+    var returnDateTime = new Date(pickupDateTime.getTime() + (totalDays * 24 * 60 * 60 * 1000) + (remainingHours * 60 * 60 * 1000));
+
+    // Get the return hour
+    var returnHour = returnDateTime.getHours();
+
+    // Adjust return hour to 12-hour format
+    var returnHourFormatted = returnHour % 12 || 12; // Convert 0 to 12
+
+    // Determine AM/PM for return time based on pickup time
+    var returnAMPM = isAM ? 'AM' : 'PM';
+
+    // Special case for midnight (12:00 AM)
+    if (returnHour === 0) {
+        returnHourFormatted = 12;
+    }
+
+    // If the return time is between 12:00 AM and 5:30 AM, increment the return date by one day
+    if (returnHour >= 0 && returnHour < 6) {
+        returnDateTime.setDate(returnDateTime.getDate() + 1);
+    }
+
+    // Update AM/PM if return hour changes
+    if ((pickupHour < 12 && returnHour >= 12) || (pickupHour >= 12 && returnHour < 12)) {
+        // Adjust return hour to 12-hour format
+        returnHourFormatted = (returnHour % 12) || 12; // Convert 0 to 12
+        // Determine AM/PM for return time based on return hour
+        if (returnHour === 0) {
+        returnAMPM = 'AM';
+    } else if (returnHour === 12) {
+        returnAMPM = 'PM';
+    } else if (returnHour < 12) {
+        returnAMPM = isAM ? 'AM' : 'PM';
+    } else {
+        returnAMPM = isAM ? 'PM' : 'AM';
+    }
+    } 
+
+    // Update return time formatted based on return hour and AM/PM
+    var returnTimeFormatted = returnHourFormatted + ':' + (returnDateTime.getMinutes() < 10 ? '0' : '') + returnDateTime.getMinutes() + ' ' + returnAMPM;
+
+    // Format return date
+    var returnDateFormatted = returnDateTime.toISOString().slice(0, 10);
+
+    // Update return date and time fields
+    document.getElementById('returnDate').value = returnDateFormatted;
+    document.getElementById('returnTime').value = returnTimeFormatted;
+
+    // Update total rental duration field
+    document.getElementById('totalDuration').value = totalDays + " days " + remainingHours + " hours";
+}
+
+document.getElementById('id_pickup_date').addEventListener('input', calculateReturnDateTime);
+document.getElementById('id_pickup_time').addEventListener('input', calculateReturnDateTime);
+document.getElementById('id_rental_duration_hours').addEventListener('input', calculateReturnDateTime);
+document.getElementById('id_rental_duration_days').addEventListener('input', calculateReturnDateTime);
+
+// Call the function initially to calculate return date, time, and total rental duration based on default values
+calculateReturnDateTime();
+
+</script>
+<script>
+    // Initialize Flatpickr for date and time inputs
+    flatpickr("#id_pickup_date", {
+    dateFormat: "Y-m-d", // Specify the date format as YYYY-MM-DD
+    minDate: "today",    // Set minimum selectable date to today
+    // Add more options as needed
+});
+
+
+    flatpickr("#id_pickup_time", {
+    enableTime: true,    // Enable time selection
+    noCalendar: true,    // Hide calendar
+    dateFormat: "h:i K",  // Customize time format with AM/PM
+    // Set default date to today
+    // Add more options as needed
+});
+
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
+#view.py
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import CarRentalBookings, Car1
+from twilio.rest import Client
+from django.conf import settings
+from datetime import date
+
+# Home view
+def home(request):
+    return render(request,'home.html')
+
+# Admin login view
+admin_username = "admin"
+admin_password = "admin"
+# views.py
+
+from django.shortcuts import render
+from .models import Car1  # Import your Car model
+
+def explore_cars(request):
+    cars = Car1.objects.all()  # Query all cars
+    return render(request, 'explore.html', {'cars': cars})
+
+def admin_login(request):
+    error = None
+    if request.method == "POST":
+        entered_username = request.POST.get('username')
+        entered_password = request.POST.get('password')
+
+        if entered_username == admin_username and entered_password == admin_password:
+            request.session['admin'] = True
+            return redirect('admin_home')
+        else:
+            error = "Login failed. Please check your username and password."
+    
+    return render(request, 'admin_login.html', {'error': error})
+
+# Admin home view
+def admin_home(request):
+    if not request.session.get('admin'):
+        return redirect('admin_login')
+    
+    return render(request, 'admin_home.html')
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from .models import Car1, CarRentalBookings
+from datetime import datetime
+
+def rent_car(request, car_id):
+    car = get_object_or_404(Car1, id=car_id)
+
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        aadhar_number = request.POST.get('aadhar_number')
+        pickup_date = request.POST.get('pickup_date')
+        pickup_time = request.POST.get('pickup_time')
+        return_date = request.POST.get('return_date')  
+        return_time = request.POST.get('return_time')  
+        driver_choice = request.POST.get('driver_choice')
+        from_location = request.POST.get('from_location')
+        to_location = request.POST.get('to_location')
+        license_number = request.POST.get('license_number')
+        work_status = request.POST.get('work_status') 
+        rental_duration_days = request.POST.get('rental_duration_days')
+        rental_duration_hours = request.POST.get('rental_duration_hours')
+
+        # Validate pickup and return time format (either 24-hour format or AM/PM format)
+        try:
+            pickup_time = datetime.strptime(pickup_time, '%I:%M %p').strftime('%I:%M %p')
+            return_time = datetime.strptime(return_time, '%I:%M %p').strftime('%I:%M %p')  
+        except ValueError:
+            return HttpResponse("Invalid time format. Please use either 24-hour format or AM/PM format.")
+
+        # If rental duration is in hours, set days to 0
+        if rental_duration_days and rental_duration_hours and rental_duration_days == '0':
+            rental_duration_days = 0
+
+        front_license_image = request.FILES.get('front_license_image')
+        back_license_image = request.FILES.get('back_license_image')
+
+        employee_id = request.POST.get('employee_id', '0')  # Defaulting to 0 if not provided
+
+        booking = CarRentalBookings.objects.create(
+            full_name=full_name,
+            email=email,
+            phone_number=phone_number,
+            aadhar_number=aadhar_number,
+            pickup_date=pickup_date,
+            pickup_time=pickup_time,
+            return_date=return_date,  
+            return_time=return_time,  
+            driver_choice=driver_choice,
+            from_location=from_location,
+            to_location=to_location,
+            license_number=license_number, 
+            rental_duration_days=rental_duration_days,
+            rental_duration_hours=rental_duration_hours,
+            work_status='Pending',  
+            car_id=car_id,
+            employee_id=employee_id,
+            front_license_image=front_license_image,
+            back_license_image=back_license_image
+        )
+
+        return render(request, 'booking_success.html')
+
+    else:
+        today = date.today()
+        return render(request, 'book_car.html', {'today': today, 'car': car})
+
+
+# Car rental bookings view
+# Car rental bookings view
+from .models import CarRentalBookings
+
+def car_rental_bookings(request):
+    pending_bookings = CarRentalBookings.objects.filter(status='Pending')
+    accepted_bookings = CarRentalBookings.objects.filter(status='Accepted', driver_choice__in=['self_driver', 'driver'])
+    rejected_bookings = CarRentalBookings.objects.filter(status='Rejected')
+    
+    # Filter bookings where employee_id is not equal to 0
+    assigned_employees = CarRentalBookings.objects.exclude(employee_id=0)
+
+    return render(request, 'booking_list.html', {
+        'pending_bookings': pending_bookings,
+        'accepted_bookings': accepted_bookings,
+        'rejected_bookings': rejected_bookings,
+        'driver_bookings': accepted_bookings.filter(driver_choice='driver',employee_id=0),
+        'self_driver_bookings': accepted_bookings.filter(driver_choice='self_driver'),
+        'assigned_employees': assigned_employees,  # Pass assigned employees data to the template
+    })
+
+
+# Booking details view
+from django.shortcuts import render, get_object_or_404
+from .models import CarRentalBookings, Car1
+
+def booking_details(request, booking_id):
+    booking = get_object_or_404(CarRentalBookings, pk=booking_id)
+
+    # Fetch the corresponding car details using the car_id from the booking
+    car_id = booking.car_id
+    car = get_object_or_404(Car1, pk=car_id)
+
+    if request.method == 'POST':
+        if 'accept' in request.POST:
+            booking.status = 'Accepted'
+            booking.save()
+            return redirect('car_rental_bookings')  # Redirect back to the booking list page
+        elif 'reject' in request.POST:
+            booking.status = 'Rejected'
+            booking.save()
+            return redirect('car_rental_bookings')  # Redirect back to the booking list page
+
+    return render(request, 'booking_details.html', {'booking': booking, 'car': car,})
+
+
+# Employee form view
+
+
+# views.py
+
+from django.shortcuts import render, redirect
+from .forms import EmployeeRegistrationForm
+
+def register_employee(request):
+    if request.method == 'POST':
+        form = EmployeeRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return render(request, 'booking_success.html')
+    else:
+        form = EmployeeRegistrationForm()
+    return render(request, 'employee.html', {'form': form})
+
+#login for staff
+# views.py
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Employee
+
+def staff_home(request):
+    # Implement your staff home view logic here
+    return render(request, 'staff_home.html')
+
+def staff_login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        input_password = request.POST.get('password')
+
+        try:
+            # Retrieve the employee based on the provided email and password
+            employee = Employee.objects.get(email=email, password=input_password)
+            request.session['employee_id'] = employee.id  # Store the employee ID in the session
+            return redirect('staff_home')  # Redirect to the staff home page if login is successful
+        except Employee.DoesNotExist:
+            # If no employee with the provided credentials is found, display an error message
+            messages.error(request, 'Login failed. Please check your email and password.')
+
+    # Render the staff login page
+    return render(request, 'staff_login.html')
+def staff_profile(request):
+    # Your view logic here
+    pass
+
+def employee_details(request):
+    if 'employee_id' not in request.session:
+        return redirect('staff_login')
+
+    employee_id = request.session['employee_id']
+    employee = Employee.objects.get(pk=employee_id)
+
+
+    return render(request, 'employee_details.html', {'employee': employee})
+
+
+#
+
+
+from django.shortcuts import render
+from .models import Employee
+
+def staff_profile(request):
+    # Retrieve employee data from the database
+    if 'employee_id' in request.session:
+        employee_id = request.session['employee_id']
+        try:
+            employee = Employee.objects.get(id=employee_id)
+        except Employee.DoesNotExist:
+            employee = None
+
+        if employee:
+            context = {
+                'employee': employee
+            }
+            return render(request, 'staff_profile.html', context)
+        else:
+            # Handle case where employee does not exist
+            return render(request, 'error.html', {'message': 'Employee not found'})
+    else:
+        # Handle case where employee_id is not in session
+        return render(request, 'error.html', {'message': 'Session data not found'})
+
+
+# views.py
+
+def send_sms(request):
+    if request.method == 'POST':
+        booking_id = request.POST.get('booking_id')
+        message = request.POST.get('message')
+        description = request.POST.get('description')
+        phone_number = request.POST.get('phone_number')
+        full_name = request.POST.get('full_name')
+
+        if booking_id and message and description and phone_number and full_name:
+            try:
+                # Construct the message with booking details
+                full_message = f"Hello {full_name},\n\n{message}\n\nDescription: {description}"
+                
+                # Initialize Twilio client
+                client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+                
+                # Send SMS
+                client.messages.create(
+                    body=full_message,
+                    from_=settings.TWILIO_PHONE_NUMBER,
+                    to=phone_number
+                )
+                
+                return HttpResponse("SMS sent successfully")
+            except Exception as e:
+                return HttpResponse(f"Failed to send SMS. Error: {str(e)}")
+        else:
+            return HttpResponse("Missing required fields for sending SMS")
+    else:
+        booking_id = request.GET.get('booking_id')
+        if booking_id:
+            booking = CarRentalBookings.objects.get(pk=booking_id)
+            return render(request, 'send_sms.html', {'booking': booking})
+        else:
+            return HttpResponse("No booking ID provided.")
+
+# registration 
+# views.py
+
+# views.py
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from .forms import CarRegistrationForm
+
+def register_car(request):
+    if request.method == 'POST':
+        form = CarRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Process the form data here
+            # Save the form data to the database, etc.
+            form.save()
+            return render(request, 'booking_success.html')
+    else:
+        form = CarRegistrationForm()
+    return render(request, 'car_reg.html', {'form': form})
+# car views.py
+
+from django.shortcuts import render
+from .models import Car1
+
+def car_list(request):
+    cars = Car1.objects.all()
+    return render(request, 'car_list.html', {'cars': cars})
+
+
+# detail views.py
+
+from django.shortcuts import render, get_object_or_404
+from .models import Car1
+
+def car_detail(request, car_id):
+    car = get_object_or_404(Car1, pk=car_id)
+    return render(request, 'detail.html', {'car': car})
+#
+from django.shortcuts import render
+from .models import CarRentalBookings, Car1
+from datetime import datetime
+
+def availability_check(request):
+    if request.method == 'POST':
+        try:
+            # Get the input data from the form
+            pickup_date_str = request.POST.get('pickup_date')
+            pickup_time = request.POST.get('pickup_time')
+            return_date_str = request.POST.get('return_date')
+            return_time = request.POST.get('return_time')
+            
+            # Convert pickup and return date/time strings to datetime objects
+            pickup_date = datetime.strptime(pickup_date_str, '%Y-%m-%d').date()
+            pickup_datetime = datetime.combine(pickup_date, datetime.strptime(pickup_time, '%I:%M %p').time())
+            return_date = datetime.strptime(return_date_str, '%Y-%m-%d').date()
+            return_datetime = datetime.combine(return_date, datetime.strptime(return_time, '%I:%M %p').time())
+
+            # Query existing bookings to check if input time and date fall between existing bookings
+            conflicting_bookings = CarRentalBookings.objects.filter(
+                pickup_date__lte=pickup_date,
+                return_date__gte=return_date
+            ).exclude(
+                # Exclude bookings where the input dates and times exactly match existing bookings
+                pickup_date=pickup_date,
+                pickup_time=pickup_time,
+                return_date=return_date,
+                return_time=return_time
+            )
+
+            # Initialize available cars to all cars by default
+            available_cars = Car1.objects.all()
+
+            # If there are conflicting bookings, adjust available cars accordingly
+            if conflicting_bookings.exists():
+                # Check if the input times fall between existing bookings' times
+                for booking in conflicting_bookings:
+                    booking_pickup_datetime = datetime.combine(booking.pickup_date, datetime.strptime(booking.pickup_time, '%I:%M %p').time())
+                    booking_return_datetime = datetime.combine(booking.return_date, datetime.strptime(booking.return_time, '%I:%M %p').time())
+                    if pickup_datetime > booking_pickup_datetime and pickup_datetime < booking_return_datetime:
+                        # If pick-up time conflicts with an existing booking, exclude the corresponding car
+                        conflicting_car_id = booking.car_id
+                        available_cars = available_cars.exclude(id=conflicting_car_id)
+                        break
+                    elif return_datetime > booking_pickup_datetime and return_datetime < booking_return_datetime:
+                        # If return time conflicts with an existing booking, exclude the corresponding car
+                        conflicting_car_id = booking.car_id
+                        available_cars = available_cars.exclude(id=conflicting_car_id)
+                        break
+            
+            return render(request, 'car_list.html', {'cars': available_cars})
+
+        except Exception as e:
+            return render(request, 'error.html', {'error_message': str(e)})
+
+    return render(request, 'availability_check.html')
+
+#
+def assign_employee_view(request, booking_id):
+    booking = get_object_or_404(CarRentalBookings, pk=booking_id)
+    
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
+        if employee_id:
+            try:
+                employee = Employee.objects.get(pk=employee_id)
+                
+                # Check if the selected employee is already assigned to another pending booking
+                conflicting_booking = CarRentalBookings.objects.filter(employee_id=employee_id, status='Pending').exclude(pk=booking_id).first()
+                if conflicting_booking:
+                    return render(request, 'error.html', {'message': 'Selected employee is already assigned to another pending booking.'})
+                
+                # Check if the employee has any work on the day of the booking
+                existing_booking_on_day = CarRentalBookings.objects.filter(employee_id=employee_id, pickup_date=booking.pickup_date).exclude(pk=booking_id).first()
+                if existing_booking_on_day:
+                    return render(request, 'error.html', {'message': 'Selected employee already has work on the day of this booking.'})
+                
+                # Check if the employee's existing work overlaps with the new booking
+                conflicting_booking_on_day = CarRentalBookings.objects.filter(
+                    employee_id=employee_id,
+                    pickup_date=booking.pickup_date,
+                    return_date=booking.return_date,
+                    pickup_time__lt=booking.return_time,
+                    return_time__gt=booking.pickup_time
+                ).exclude(pk=booking_id).first()
+                if conflicting_booking_on_day:
+                    return render(request, 'error.html', {'message': 'Selected employee already has work overlapping with this booking.'})
+
+                # Update the booking with the selected employee
+                booking.employee = employee
+                booking.employee_id = employee_id
+                booking.save()
+
+                messages.success(request, 'Employee assigned successfully.')
+
+                return redirect('car_rental_bookings')
+            
+            except Employee.DoesNotExist:
+                return render(request, 'error.html', {'message': 'Selected employee does not exist.'})
+    
+    # Fetch all available employees
+    employees = Employee.objects.all()
+    
+    # Filter out employees who have existing work on the day of the booking or who are already assigned to another pending booking
+    employees = employees.exclude(
+        id__in=CarRentalBookings.objects.filter(status='Pending').values_list('employee_id', flat=True)
+    ).exclude(
+        id__in=CarRentalBookings.objects.filter(pickup_date=booking.pickup_date).values_list('employee_id', flat=True)
+    )
+    
+    return render(request, 'allotment.html', {'booking': booking, 'employees': employees})
+
+# reassihn
+# views.py
+# views.py
+from django.db.models import Q
+
+def reassign_employee_view(request, booking_id):
+    booking = get_object_or_404(CarRentalBookings, pk=booking_id)
+    
+    if request.method == 'POST':
+        employee_id = request.POST.get('employee_id')
+        
+        if employee_id:
+            try:
+                employee = Employee.objects.get(pk=employee_id)
+                
+                # Check if the selected employee is available
+                is_employee_available = CarRentalBookings.objects.filter(employee_id=employee_id, status='Finished').exists()
+                
+                if is_employee_available:
+                    # Check if the selected employee is already assigned to another pending booking
+                    conflicting_booking = CarRentalBookings.objects.filter(employee_id=employee_id, status='Pending').exclude(pk=booking_id).first()
+                    if conflicting_booking:
+                        return render(request, 'error.html', {'message': 'Selected employee is already assigned to another pending booking.'})
+                    
+                    # Check if the employee has any work on the day of the booking
+                    existing_booking_on_day = CarRentalBookings.objects.filter(pickup_date=booking.pickup_date, employee_id=employee_id).exclude(pk=booking_id).first()
+                    if existing_booking_on_day:
+                        return render(request, 'error.html', {'message': 'Selected employee already has work on the day of this booking.'})
+                    
+                    # Check if the employee's existing work overlaps with the new booking
+                    conflicting_booking_on_day = CarRentalBookings.objects.filter(
+                        Q(pickup_date=booking.pickup_date) | Q(return_date=booking.return_date),
+                        employee_id=employee_id,
+                    ).exclude(pk=booking_id).first()
+                    if conflicting_booking_on_day:
+                        return render(request, 'error.html', {'message': 'Selected employee already has work overlapping with this booking.'})
+                    
+                    # Update the booking with the selected employee ID
+                    booking.employee_id = employee_id
+                    booking.save()
+
+                    messages.success(request, 'Employee reassigned successfully.')
+
+                    return redirect('car_rental_bookings')
+                else:
+                    # Handle case where selected employee is not available
+                    return render(request, 'error.html', {'message': 'Selected employee is not available.'})
+            except Employee.DoesNotExist:
+                # Handle case where selected employee does not exist
+                return render(request, 'error.html', {'message': 'Selected employee does not exist.'})
+    
+    # Fetch all available employees (employees who are not already assigned to other pending bookings and don't have work on the day of the new booking)
+    unavailable_employee_ids = CarRentalBookings.objects.exclude(id=booking.id).filter(status='Pending').values_list('employee_id', flat=True)
+    existing_bookings_on_day = CarRentalBookings.objects.filter(Q(pickup_date=booking.pickup_date) | Q(return_date=booking.return_date)).values_list('employee_id', flat=True)
+    employees = Employee.objects.exclude(id__in=unavailable_employee_ids).exclude(id__in=existing_bookings_on_day)
+    
+    # Exclude the employee whose name should not appear in the dropdown
+    if booking.employee_id:
+        employees = employees.exclude(id=booking.employee_id)
+    
+    return render(request, 'reallot.html', {'booking': booking, 'employees': employees})
+
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Car Management</title>
+        <style>
+            body {
+                background-image: url('bg.jpg');
+                background-size: cover;
+                font-family: 'Arial', sans-serif;
+                text-align: center; /* Center align the content */
+                margin: 0;
+                padding-top: 40px; /* Add space at the top */
+            }
+    
+            h1 {
+                color: #333;
+            }
+    
+            table {
+                width: 80%; /* Adjust table width */
+                margin: auto; /* Center the table */
+                border-collapse: collapse;
+                margin-top: 20px;
+                background-color: #f0f0f0; /* Light background color */
+            }
+    
+            th, td {
+                border: 1px solid #ddd;
+                padding: 10px;
+                text-align: left;
+            }
+    
+            th {
+                background-color: #2980b9; /* Adjusted green color */
+                color: white;
+            }
+    
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+    
+            tr:hover {
+                background-color: #eaeaea; /* Darker hover color */
+            }
+    
+            .detail-button, .update-button, #registrationButton {
+                display: inline-block;
+                padding: 8px 12px;
+                margin: 5px; /* Add margin for buttons */
+                background-color: #2980b9; /* Blue color scheme */
+                color: #fff;
+                text-decoration: none;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+    
+            .detail-button:hover, .update-button:hover, #registrationButton:hover {
+                background-color: #2980b9; /* Darker hover color */
+            }
+    
+            .back-button {
+                padding: 10px 20px;
+                font-size: 16px;
+                background-color: #2980b9;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                text-decoration: none;
+                position: fixed;
+                top: 20px; /* Adjust position to top */
+                right: 20px; /* Adjust position to right */
+                display: inline-block;
+            }
+    
+            .back-button:hover {
+                background-color: #2980b9;
+            }
+            #registrationButton {
+        margin: 10px 0px 10px 900px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Car Management</h1>
+    
+        <!-- Registration Button -->
+        <a href="{% url 'register_car' %}" id="registrationButton">Register Car</a>
+    
+        <table>
+            <tr>
+                <th>Car Make</th>
+                <th>Car Model</th>
+                <th>Vehicle Number</th>
+                <th>Color</th>
+                <th>Transmission Type</th>
+                <th>Seat Number</th>
+                <th>Fuel Type</th>
+                <th>Availability</th>
+                <th>Condition</th>
+                <th>Hour Price</th>
+                <th>Day Price</th>
+                <th>Action</th>
+                <th>Update</th>
+    
+            </tr>
+            {% for car in cars %}
+            <tr>
+                <td>{{ car.car_make }}</td>
+                <td>{{ car.car_model }}</td>
+                <td>{{ car.vehicle_number }}</td>
+                <td>{{ car.color }}</td>
+                <td>{{ car.transmission_type }}</td>
+                <td>{{ car.seat_number }}</td>
+                <td>{{ car.fuel_type }}</td>
+                <td>{{ car.availability }}</td>
+                <td>{{ car.condition }}</td>
+                <td>{{ car.hour_price }}</td>
+                <td>{{ car.day_price }}</td>
+                <td><a class="detail-button" href="{% url 'car_details' car.id %}">View Details</a></td>
+                <td><a class="update-button" href="{% url 'update_car' car.id %}">Update</a></td>
+    
+    
+            </tr>
+            {% endfor %}
+        </table>
+    
+        <!-- Back Button -->
+        <a href="{% url 'admin_home' %}" class="back-button">Back</a>
+    </body>
+    </html>
+    

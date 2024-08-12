@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Listings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS styles */
+        body {
+            background-image: url('Car_Wash.gif');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: 100vh;
+            padding-top: 80px; 
+            padding-left: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .card {
+            position: relative;
+            width: 240px;
+            height: 380px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            margin: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%; /* Updated height to 100% */
+            overflow:hidden;
+            position: relative;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Changed from contain to cover */
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .car-make {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            color: #fff;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+
+        .card:hover .car-make {
+            opacity: 0;
+        }
+
+        .card-details {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            color: #fff;
+            transition: transform 0.3s ease;
+            transform: translateY(100%);
+        }
+
+        .card:hover .card-details {
+            transform: translateY(0);
+        }
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px; /* Increase arrow width */
+            height: 70px; /* Increase arrow height */
+            font-size: 40px; /* Increase arrow size */
+            z-index: 1;
+            color: #ffffffa6; /* Set arrow color */
+            text-decoration: none; /* Remove any default text decoration */
+        }
+
+        .prev {
+            left: 0px; /* Position left arrow */
+        }
+
+        .next {
+            right: -28px; /* Position right arrow */
+        }
+
+        /* Add hover effect for arrows */
+        .prev:hover, .next:hover {
+            color: #ffffff; /* Change arrow color on hover */
+            text-decoration: none; /* Remove underline on hover */
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            {% for car in cars %}
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-image">
+                        <img src="{{ car.car_photo.url }}" class="img-fluid" alt="{{ car.car_make }} {{ car.car_model }}" id="carImage_{{ car.id }}" data-image-index="0">
+                        <a href="#" class="prev" onclick="changeImage('{{ car.id }}', -1)">&#10094;</a>
+                        <a href="#" class="next" onclick="changeImage('{{ car.id }}', 1)">&#10095;</a>
+                        <h5 class="car-make">{{ car.car_make }}</h5>
+                    </div>
+                    <div class="card-details">
+                        <h5>{{ car.car_make }}</h5>
+                        <p><strong>Model:</strong> {{ car.car_model }}</p>
+                        <p><strong>Price (per day):</strong> ₹{{ car.day_price }}</p>
+                        <p><strong>Price (per hour):</strong> ₹{{ car.hour_price }}</p>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <script>
+        var carPhotos = {
+            {% for car in cars %}
+                "{{ car.id }}": [
+                    "{{ car.car_photo.url }}",
+                    "{% if car.car_photo_2 %}{{ car.car_photo_2.url }}{% endif %}",
+                    "{% if car.car_photo_3 %}{{ car.car_photo_3.url }}{% endif %}"
+                ],
+            {% endfor %}
+        };
+
+        function changeImage(carId, n) {
+            var currentImageIndex = parseInt(document.getElementById("carImage_" + carId).getAttribute("data-image-index"));
+            var carPhotoUrls = carPhotos[carId];
+            currentImageIndex += n;
+            if (currentImageIndex >= carPhotoUrls.length) {
+                currentImageIndex = 0;
+            }
+            if (currentImageIndex < 0) {
+                currentImageIndex = carPhotoUrls.length - 1;
+            }
+            document.getElementById("carImage_" + carId).src = carPhotoUrls[currentImageIndex];
+            document.getElementById("carImage_" + carId).setAttribute("data-image-index", currentImageIndex.toString());
+        }
+    </script>
+    
+</body>
+</html>
+
+

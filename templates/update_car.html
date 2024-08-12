@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Car Details</title>
+  <style>
+    /* Body styling for a sleek background */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-image: url("https://www.pexels.com/search/car%20background/"); /* Replace with your image URL */
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed; /* Keep background fixed on scroll */
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #fff; /* White text for better contrast */
+    }
+
+    form {
+      display: flex; /* Arrange labels and inputs horizontally */
+      flex-direction: column; /* Stack them vertically */
+      width: 50%; /* Adjust width as needed */
+      margin: 0 auto; /* Center the form horizontally */
+      padding: 20px;
+      border-radius: 10px; /* Rounded corners for a softer look */
+      background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    }
+
+    label {
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #fff; /* White text for better contrast */
+    }
+
+    input,
+    select {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      color: #333; /* Darker text for better readability */
+    }
+
+    button {
+      background-color: #4CAF50; /* Green */
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Update Car Details</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="hour_price">Hour Price:</label>
+      <input type="text" id="hour_price" name="hour_price" value="{{ car.hour_price }}">
+    </div>
+    <div class="form-group">
+      <label for="day_price">Day Price:</label>
+      <input type="text" id="day_price" name="day_price" value="{{ car.day_price }}">
+    </div>
+    <div class="form-group">
+      <label for="condition">Condition:</label>
+      <select id="condition" name="condition">
+        <option value="excellent" {% if car.condition == 'excellent' %} selected {% endif %}>Excellent</option>
+        <option value="good" {% if car.condition == 'good' %} selected {% endif %}>Good</option>
+        <option value="fair" {% if car.condition == 'fair' %} selected {% endif %}>Fair</option>
+        <option value="poor" {% if car.condition == 'poor' %} selected {% endif %}>Poor</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="additional_features">Additional Features:</label>
+      <input type="text" id="additional_features" name="additional_features" value="{{ car.additional_features }}">
+    </div>
+    <button type="submit">Update Car</button>
+  </form>
+</body>
+</html>

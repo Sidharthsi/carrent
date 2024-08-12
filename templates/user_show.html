@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            border-bottom: 1px solid #ddd;
+            padding: 20px 0;
+        }
+
+        strong {
+            color: #555;
+            font-weight: bold;
+        }
+
+        p {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+            margin-top: 20px;
+        }
+
+        /* Status color coding */
+        .status-pending {
+            color: #007bff; /* Blue */
+        }
+
+        .status-accepted {
+            color: #28a745; /* Green */
+        }
+
+        .status-rejected {
+            color: #dc3545; /* Red */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Booking Details</h1>
+
+    {% if booking_details %}
+        <ul>
+            {% for detail in booking_details %}
+                <li>
+                    <strong>Booking ID:</strong> {{ detail.booking.id }}<br>
+                    
+                    {% if detail.booking.driver_choice == 'driver' %}
+                        <strong>Employee Name:</strong> {{ detail.employee_name }}<br>
+                    {% endif %}
+                    
+                    <strong>Pickup Date:</strong> {{ detail.booking.pickup_date }}<br>
+                    <strong>From Location:</strong> {{ detail.booking.from_location }}<br>
+                    <strong>To Location:</strong> {{ detail.booking.to_location }}<br>
+                    <strong>Work Status:</strong> 
+                    <span class="status-{{ detail.booking.status|lower }}">{{ detail.booking.status }}</span><br>
+                    <strong>Driver Preference:</strong> {{ detail.booking.driver_choice }}<br>
+                    <strong>Duration:</strong> {{ detail.booking.rental_duration }} {{ detail.booking.duration_unit }}<br>
+                    {% if detail.booking.status == 'Rejected' %}
+                        <strong>Reason for Rejection:</strong> <em>{{ detail.booking.work_status }}</em><br>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No bookings found for the provided name and email.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

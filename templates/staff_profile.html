@@ -1,0 +1,67 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display and Update Staff Data</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            background-image: url('{% static "7200420_30628.jpg" %}');
+            background-size: cover;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .staff-info {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            margin-bottom: 16px;
+        }
+
+        .update-form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="staff-info">
+                <div class="info-label">Name:</div>
+                <div class="info-value">{{ employee.full_name }}</div>
+                <div class="info-label">Phone Number:</div>
+                <div class="info-value">{{ employee.phone_number }}</div>
+                <div class="info-label">Email:</div>
+                <div class="info-value">{{ employee.email }}</div>
+                <div class="info-label">Gender:</div>
+                <div class="info-value">{{ employee.gender }}</div>
+                <!-- Add more fields as needed -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

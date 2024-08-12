@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Home</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .finish-button {
+            padding: 6px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Pending Tasks</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Pickup Date</th>
+            <th>Pickup Time</th>
+            <th>Return Date</th>
+            <th>Return Time</th>
+            <th>From Location</th>
+            <th>To Location</th>
+            <th>Car Model</th>
+            <th>Action</th>
+        </tr>
+        {% for task in pending_tasks %}
+        <tr>
+            <td>{{ task.full_name }}</td>
+            <td>{{ task.pickup_date }}</td>
+            <td>{{ task.pickup_time }}</td>
+            <td>{{ task.return_date }}</td>
+            <td>{{ task.return_time }}</td>
+            <td>{{ task.from_location }}</td>
+            <td>{{ task.to_location }}</td>
+            <td>{{ task.car_model }}</td>
+            <td><button class="finish-button" onclick="finishTask('{{ task.id }}')">Finish</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Finished Tasks</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Pickup Date</th>
+            <th>Pickup Time</th>
+            <th>Return Date</th>
+            <th>Return Time</th>
+            <th>From Location</th>
+            <th>To Location</th>
+            <th>Car Model</th>
+        </tr>
+        {% for task in finished_tasks %}
+        <tr>
+            <td>{{ task.full_name }}</td>
+            <td>{{ task.pickup_date }}</td>
+            <td>{{ task.pickup_time }}</td>
+            <td>{{ task.return_date }}</td>
+            <td>{{ task.return_time }}</td>
+            <td>{{ task.from_location }}</td>
+            <td>{{ task.to_location }}</td>
+            <td>{{ task.car_model }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    function finishTask(bookingId) {
+        $.ajax({
+            type: 'POST',
+            url: '/finish_task/',
+            data: {
+                'booking_id': bookingId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
+            },
+            success: function(response) {
+                alert(response.message);
+                location.reload();  // Reload the page after successful update
+            },
+            error: function(xhr, status, error) {
+                alert("An error occurred while processing the request.");
+            }
+        });
+    }
+</script>
+
+    
+</body>
+</html>

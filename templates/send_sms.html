@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SMS</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Send SMS</h1>
+    {% if employee %}
+
+{% else %}
+    <!-- Display message when employee is not found -->
+    <p></p>
+{% endif %}
+
+<form method="post" action="{% url 'send_sms' %}">
+    {% csrf_token %}
+    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+    <input type="hidden" name="phone_number" value="{{ booking.phone_number }}">
+    <input type="hidden" name="full_name" value="{{ booking.full_name }}">
+    
+    <!-- Rest of the form fields -->
+    <label for="message">Message:</label><br>
+    <textarea id="message" name="message" rows="4" placeholder="Hello {{ booking.full_name }},"></textarea><br>
+    
+    <label for="description">Description:</label><br>
+    <select id="description" name="description" onchange="checkCustom(this);" required>
+        <option value="Description 1">Your booking is accepted,enjoy your drive</option>
+        <option value="Your driver, {{ employee.full_name }}, is assigned for your journey. Please enjoy!">Your driver, {{ employee.full_name }} assigned for your journey. Please enjoy!</option>
+        <option value="Description 2">Sorry, there is an issue with your booking. Please re-book. Please contact us for any assistance</option>
+        <option value="Other">Other (Please specify)</option>
+    </select><br>
+    
+    <div id="customDescription" style="display: none;">
+        <label for="customInput">Enter Custom Description:</label><br>
+        <input type="text" id="customInput" name="custom_description">
+    </div>
+    
+    <button type="submit">Send SMS</button>
+</form>
+
+
+    <script>
+        // Function to autofill message textarea with greeting and driver info
+        document.addEventListener('DOMContentLoaded', function() {
+            var messageTextarea = document.getElementById('message');
+            var fullName = "{{ booking.full_name }}";
+            var employeeFullName = "{{ employee.full_name }}";
+
+            if ("{{ employee }}") {
+                // Update textarea value with greeting and driver assignment
+                messageTextarea.value = `Hello ${fullName},\n\nYour driver, ${employeeFullName}, is assigned for your journey. Please enjoy Driver phnone number: {{ employee.phone_number }} . Please contact us for any assistance`;
+            } else {
+                // Update textarea value with alternative message
+                messageTextarea.value = `Hello ${fullName},\n\n Please contact us for any assistance.`;
+            }
+        });
+
+        // Function to show/hide custom description input based on selection
+        function checkCustom(select) {
+            var customDiv = document.getElementById("customDescription");
+            var customInput = document.getElementById("customInput");
+            
+            if (select.value === "Custom" || select.value === "Other") {
+                customDiv.style.display = "block";
+                customInput.required = true;
+            } else {
+                customDiv.style.display = "none";
+                customInput.required = false;
+                customInput.value = ""; // Clear the input field if hidden
+            }
+        }
+    </script>
+</body>
+</html>
